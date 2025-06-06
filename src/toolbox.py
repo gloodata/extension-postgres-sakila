@@ -9,75 +9,6 @@ NS = "gd-sakila"
 tb = Toolbox(NS, "Sakila", "Sakila Explorer", state=State())
 
 
-def create_group_chart(title, cols, rows, unit="", chart_type="bar"):
-    on_clicks = []
-    col_keys = [col[0] for col in cols]
-    row_lists = [[row.get(key) for key in col_keys] for row in rows]
-
-    result = {
-        "info": {
-            "type": "group",
-            "chartType": chart_type,
-            "title": title,
-            "unit": unit,
-            "keyName": cols[0][0],
-            "valName": cols[1][0],
-            "onClick": on_clicks,
-        },
-        "data": {"cols": cols, "rows": row_lists},
-    }
-    return result
-
-
-def create_series_chart(title, cols, rows, chart_type="bar"):
-    x, x_title = cols[0]
-    serie, serie_title = cols[1]
-    y, y_title = cols[2]
-
-    col_keys = [col[0] for col in cols]
-    row_lists = [[row.get(key) for key in col_keys] for row in rows]
-    on_clicks = []
-
-    return {
-        "type": "Series",
-        "chartType": chart_type,
-        "title": title,
-        "unit": "#",
-        "xColTitle": x_title,
-        "yColTitle": y_title,
-        "seriesCol": serie,
-        "xCol": x,
-        "valCols": [y],
-        "pivot": {
-            "keyName": serie,
-            "valName": y,
-        },
-        "cols": cols,
-        "rows": row_lists,
-        "onClick": on_clicks,
-    }
-
-
-def to_area(rows):
-    areas = [{"name": row[0], "value": row[1]} for idx, row in enumerate(rows)]
-    return areas
-
-
-def create_area_map(title, cols, rows, map_type="usa"):
-    col_keys = [col[0] for col in cols]
-    row_lists = [[row.get(key) for key in col_keys] for row in rows]
-    areas = to_area(row_lists)
-    on_clicks = []
-    result = {
-        "type": "AreaMap",
-        "mapId": map_type,
-        "infoId": map_type,
-        "onClick": on_clicks,
-        "items": areas,
-    }
-    return result
-
-
 # ================================
 # Declaration of enums and filters
 # ================================
@@ -120,6 +51,7 @@ class YesNo(Enum):
     YES = "Yes"
     NO = "No"
 
+
 # ====================
 # Declaration of tools
 # ====================
@@ -151,8 +83,7 @@ async def actor_with_most_films(
     - max_length: Maximum film length in minutes (default: 200)
     - category: Optional film category filter (e.g., 'Action', 'Comedy')
 
-    Result:
-    - A bar chart showing actors with the highest number of film appearances
+    Returns a bar chart showing actors with the highest number of film appearances.
     """
     rows = await state.run_query(
         "actor_with_most_films",
@@ -162,12 +93,22 @@ async def actor_with_most_films(
         max_length=max_length,
         category=category
     )
-    return create_group_chart(
-        "Actor with most films",
-        cols=[["actor_name", "Actor Name"], ["films", "Number of Films"]],
-        rows=rows,
-        chart_type="bar",
-    )
+    
+    return {
+        "info": {
+            "type": "group",
+            "chartType": "bar",
+            "title": "Actor with most films",
+            "unit": "",
+            "keyName": "actor_name",
+            "valName": "films",
+            "onClick": [],
+        },
+        "data": {
+            "cols": [["actor_name", "Actor Name"], ["films", "Number of Films"]],
+            "rows": [[row.get("actor_name"), row.get("films")] for row in rows]
+        },
+    }
 
 
 # 2. Monthly rental revenue (Series Bar Chart)
@@ -194,8 +135,7 @@ async def monthly_rental_revenue(
     - end_date: End date for analysis (default: today)
     - store: Optional store filter. Default is all stores (None).
 
-    Result:
-    - A line chart showing revenue trends by month
+    Returns a line chart showing revenue trends by month.
     """
     rows = await state.run_query(
         "monthly_rental_revenue",
@@ -203,12 +143,25 @@ async def monthly_rental_revenue(
         end_date=end_date,
         store=store,
     )
-    return create_series_chart(
-        "Monthly Rental Revenue",
-        cols=[["p_date", "Month"], ["category_name", "Category"], ["total_revenue", "Revenue ($)"]],
-        rows=rows,
-        chart_type="bar",
-    )
+    
+    return {
+        "type": "Series",
+        "chartType": "bar",
+        "title": "Monthly Rental Revenue",
+        "unit": "#",
+        "xColTitle": "Month",
+        "yColTitle": "Revenue ($)",
+        "seriesCol": "category_name",
+        "xCol": "p_date",
+        "valCols": ["total_revenue"],
+        "pivot": {
+            "keyName": "category_name",
+            "valName": "total_revenue",
+        },
+        "cols": [["p_date", "Month"], ["category_name", "Category"], ["total_revenue", "Revenue ($)"]],
+        "rows": [[row.get("p_date"), row.get("category_name"), row.get("total_revenue")] for row in rows],
+        "onClick": [],
+    }
 
 
 # 3. Film category distribution (Pie Chart)
@@ -237,8 +190,7 @@ async def film_category_distribution(
     - min_rental_rate: Minimum rental rate filter (default: 0.0)
     - max_rental_rate: Maximum rental rate filter (default: 10.0)
 
-    Result:
-    - A pie chart showing the distribution of films by category
+    Returns a pie chart showing the distribution of films by category.
     """
     rows = await state.run_query(
         "film_category_distribution",
@@ -247,12 +199,22 @@ async def film_category_distribution(
         min_rental_rate=min_rental_rate,
         max_rental_rate=max_rental_rate,
     )
-    return create_group_chart(
-        "Film Category Distribution",
-        cols=[["category_name", "Category"], ["film_count", "Number of Films"]],
-        rows=rows,
-        chart_type="pie",
-    )
+    
+    return {
+        "info": {
+            "type": "group",
+            "chartType": "pie",
+            "title": "Film Category Distribution",
+            "unit": "",
+            "keyName": "category_name",
+            "valName": "film_count",
+            "onClick": [],
+        },
+        "data": {
+            "cols": [["category_name", "Category"], ["film_count", "Number of Films"]],
+            "rows": [[row.get("category_name"), row.get("film_count")] for row in rows]
+        },
+    }
 
 
 # 4. Revenue by country (Area Map)
@@ -279,8 +241,7 @@ async def revenue_by_country(
     - end_date: End date for analysis (default: today)
     - store: Optional store filter. Default is all stores (None).
 
-    Result:
-    - An area map showing revenue distribution by country
+    Returns an area map showing revenue distribution by country.
     """
     rows = await state.run_query(
         "revenue_by_country",
@@ -288,14 +249,19 @@ async def revenue_by_country(
         end_date=end_date,
         store=store,
     )
-    return create_area_map(
-        "Revenue by Country",
-        cols=[["country_name", "Country"], ["total_revenue", "Revenue ($)"]],
-        rows=rows,
-        map_type="world",
-    )
+    
+    areas = [{"name": row.get("country_name"), "value": row.get("total_revenue")} for row in rows]
+    
+    return {
+        "type": "AreaMap",
+        "mapId": "world",
+        "infoId": "world",
+        "onClick": [],
+        "items": areas,
+    }
 
 
+# 5. Daily rental trends by category (Line Chart)
 @tb.tool(
     name="Daily rental trends by category",
     examples=[
@@ -319,10 +285,9 @@ async def daily_rental_trends_by_category(
     - start_date: Start date for analysis (default: 30 days ago)
     - end_date: End date for analysis (default: today)
     - store: Optional store filter. Default is all stores (None).
-    - category_name: Optional category filter (e.g., 'Action', 'Comedy')
+    - category: Optional category filter (e.g., 'Action', 'Comedy')
 
-    Result:
-    - A line chart showing rental trends by category over time
+    Returns a line chart showing rental trends by category over time.
     """
     rows = await state.run_query(
         "daily_rental_trends_by_category",
@@ -331,18 +296,28 @@ async def daily_rental_trends_by_category(
         store=store,
         category=category,
     )
-    return create_series_chart(
-        "Daily Rental Trends by Category",
-        cols=[
-            ["rental_date", "Date"],
-            ["category_name", "Category"],
-            ["rental_count", "Rentals"],
-        ],
-        rows=rows,
-        chart_type="line",
-    )
+    
+    return {
+        "type": "Series",
+        "chartType": "line",
+        "title": "Daily Rental Trends by Category",
+        "unit": "#",
+        "xColTitle": "Date",
+        "yColTitle": "Rentals",
+        "seriesCol": "category_name",
+        "xCol": "rental_date",
+        "valCols": ["rental_count"],
+        "pivot": {
+            "keyName": "category_name",
+            "valName": "rental_count",
+        },
+        "cols": [["rental_date", "Date"], ["category_name", "Category"], ["rental_count", "Rentals"]],
+        "rows": [[row.get("rental_date"), row.get("category_name"), row.get("rental_count")] for row in rows],
+        "onClick": [],
+    }
 
 
+# 6. Top customers by rental count (Bar Chart)
 @tb.tool(
     name="Top customers by rentals",
     examples=[
@@ -372,8 +347,7 @@ async def top_customers_by_rentals(
     - max_length: Maximum film length filter (default: 200)
     - active_only: Show only active customers (default: Yes)
 
-    Result:
-    - A bar chart showing top customers by rental count
+    Returns a bar chart showing top customers by rental count.
     """
     rows = await state.run_query(
         "top_customers_by_rentals",
@@ -384,17 +358,25 @@ async def top_customers_by_rentals(
         max_length=max_length,
         active_only=active_only,
     )
-    return create_group_chart(
-        "Top Customers by Rentals",
-        cols=[
-            ["customer_name", "Customer Name"],
-            ["rental_count", "Number of Rentals"],
-        ],
-        rows=rows,
-        chart_type="bar",
-    )
+    
+    return {
+        "info": {
+            "type": "group",
+            "chartType": "bar",
+            "title": "Top Customers by Rentals",
+            "unit": "",
+            "keyName": "customer_name",
+            "valName": "rental_count",
+            "onClick": [],
+        },
+        "data": {
+            "cols": [["customer_name", "Customer Name"], ["rental_count", "Number of Rentals"]],
+            "rows": [[row.get("customer_name"), row.get("rental_count")] for row in rows]
+        },
+    }
 
 
+# 7. Film length distribution by category (Bar Chart)
 @tb.tool(
     name="Film length distribution by category",
     examples=[
@@ -416,20 +398,26 @@ async def film_length_distribution_by_category(
     - start_year: Starting release year (default: 2000)
     - end_year: Ending release year (default: 2010)
 
-    Result:
-    - A horizontal bar chart showing average film length by category
+    Returns a horizontal bar chart showing average film length by category.
     """
     rows = await state.run_query(
         "film_length_distribution_by_category",
         start_year=start_year,
         end_year=end_year,
     )
-    return create_group_chart(
-        "Film Length Distribution by Category",
-        cols=[
-            ["category_name", "Category"],
-            ["avg_length_minutes", "Average Length (minutes)"],
-        ],
-        rows=rows,
-        chart_type="hbar",
-    )
+    
+    return {
+        "info": {
+            "type": "group",
+            "chartType": "hbar",
+            "title": "Film Length Distribution by Category",
+            "unit": "",
+            "keyName": "category_name",
+            "valName": "avg_length_minutes",
+            "onClick": [],
+        },
+        "data": {
+            "cols": [["category_name", "Category"], ["avg_length_minutes", "Average Length (minutes)"]],
+            "rows": [[row.get("category_name"), row.get("avg_length_minutes")] for row in rows]
+        },
+    }

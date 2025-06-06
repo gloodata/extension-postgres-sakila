@@ -91,11 +91,12 @@ FROM rental r
 JOIN inventory i USING (inventory_id)
 JOIN film f USING (film_id)
 JOIN film_category fc USING (film_id)
+JOIN category c USING (category_id)
 WHERE r.rental_date >= :start_date
   AND r.rental_date <= :end_date
   AND (:store = 0 OR i.store_id = :store)
-  AND (:category = 0 OR fc.category_id = :category)
-GROUP BY DATE(r.rental_date), c.category_id, c.name
+  AND (:category = 0 OR c.category_id = :category)
+GROUP BY DATE(r.rental_date), fc.category_id, c.name
 ORDER BY rental_date, category_name;
 
 -- 6. Top customers by rental count (Bar Chart)
