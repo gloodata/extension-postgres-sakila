@@ -12,7 +12,7 @@ tb = Toolbox(NS, "Sakila", "Sakila Explorer", state=State())
 # ================================
 # Declaration of enums and filters
 # ================================
-@tb.enum(name="category", icon="list")
+@tb.enum(icon="list")
 class FilmCategory(DynEnum):
     """
     Category of films in the Sakila database.
@@ -22,12 +22,8 @@ class FilmCategory(DynEnum):
     async def search(state: State, query: str = "", limit: int = 100):
         return await state.search("category_enum", query, limit)
 
-    @staticmethod
-    async def find_best_match(state: State, query: str = ""):
-        return await FilmCategory.search(state, query, limit=1)
 
-
-@tb.enum(name="store", icon="list")
+@tb.enum(icon="list")
 class Store(DynEnum):
     """
     Store of films in the Sakila database.
@@ -36,10 +32,6 @@ class Store(DynEnum):
     @staticmethod
     async def search(state: State, query: str = "", limit: int = 100):
         return await state.search("store_enum", query, limit)
-
-    @staticmethod
-    async def find_best_match(state: State, query: str = ""):
-        return await Store.search(state, query, limit=1)
 
 
 @tb.enum(icon="unit")
@@ -63,7 +55,9 @@ class YesNo(Enum):
         "Top actors by film count",
         "Which actors appeared in most movies",
     ],
-    manual_update=False,
+    args={"start_year": "from year", "end_year": "to year",
+          "min_length": "min film length",
+          "max_length": "max film length"}
 )
 async def actor_with_most_films(
     state: State,
@@ -102,7 +96,6 @@ async def actor_with_most_films(
             "unit": "",
             "keyName": "actor_name",
             "valName": "films",
-            "onClick": [],
         },
         "data": {
             "cols": [["actor_name", "Actor Name"], ["films", "Number of Films"]],
@@ -116,10 +109,10 @@ async def actor_with_most_films(
     name="Monthly rental revenue",
     examples=[
         "Show monthly rental revenue trends",
-        "Revenue by month",
-        "Monthly income analysis",
+        "Rental revenue by month",
+        "Monthly rental income analysis",
     ],
-    manual_update=False,
+    args={"start_date": "from", "end_date": "to"}
 )
 async def monthly_rental_revenue(
     state: State,
@@ -164,10 +157,10 @@ async def monthly_rental_revenue(
             ["total_revenue", "Revenue ($)"],
         ],
         "rows": [
-            [row.get("p_date"), row.get("category_name"), row.get("total_revenue")]
+            [row.get("p_date"), row.get("category_name"),
+             row.get("total_revenue")]
             for row in rows
         ],
-        "onClick": [],
     }
 
 
@@ -179,7 +172,10 @@ async def monthly_rental_revenue(
         "Category distribution",
         "Films by genre",
     ],
-    manual_update=False,
+    args={"start_year": "from year",
+          "end_year": "to year",
+          "min_rental_rate": "min rental rate",
+          "max_rental_rate": "max rental rate"}
 )
 async def film_category_distribution(
     state: State,
@@ -215,7 +211,6 @@ async def film_category_distribution(
             "unit": "",
             "keyName": "category_name",
             "valName": "film_count",
-            "onClick": [],
         },
         "data": {
             "cols": [["category_name", "Category"], ["film_count", "Number of Films"]],
@@ -232,7 +227,7 @@ async def film_category_distribution(
         "Country revenue analysis",
         "Geographic revenue distribution",
     ],
-    manual_update=False,
+    args={"start_date": "from", "end_date": "to"}
 )
 async def revenue_by_country(
     state: State,
@@ -265,8 +260,6 @@ async def revenue_by_country(
     return {
         "type": "AreaMap",
         "mapId": "world",
-        "infoId": "world",
-        "onClick": [],
         "items": areas,
     }
 
@@ -279,7 +272,7 @@ async def revenue_by_country(
         "Rental patterns by category",
         "Daily category performance",
     ],
-    manual_update=False,
+    args={"start_date": "from", "end_date": "to"}
 )
 async def daily_rental_trends_by_category(
     state: State,
@@ -327,10 +320,10 @@ async def daily_rental_trends_by_category(
             ["rental_count", "Rentals"],
         ],
         "rows": [
-            [row.get("rental_date"), row.get("category_name"), row.get("rental_count")]
+            [row.get("rental_date"), row.get(
+                "category_name"), row.get("rental_count")]
             for row in rows
         ],
-        "onClick": [],
     }
 
 
@@ -342,7 +335,8 @@ async def daily_rental_trends_by_category(
         "Best customers by rental count",
         "Customer rental analysis",
     ],
-    manual_update=False,
+    args={"start_date": "from", "end_date": "to",
+          "min_length": "min film length", "max_length": "max film length"}
 )
 async def top_customers_by_rentals(
     state: State,
@@ -384,7 +378,6 @@ async def top_customers_by_rentals(
             "unit": "",
             "keyName": "customer_name",
             "valName": "rental_count",
-            "onClick": [],
         },
         "data": {
             "cols": [
@@ -406,7 +399,7 @@ async def top_customers_by_rentals(
         "Average movie duration by genre",
         "Category length analysis",
     ],
-    manual_update=False,
+    args={"start_year": "from year", "end_year": "to year"}
 )
 async def film_length_distribution_by_category(
     state: State,
@@ -436,7 +429,6 @@ async def film_length_distribution_by_category(
             "unit": "",
             "keyName": "category_name",
             "valName": "avg_length_minutes",
-            "onClick": [],
         },
         "data": {
             "cols": [
