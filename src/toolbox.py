@@ -91,9 +91,9 @@ async def actor_with_most_films(
         end_year=end_year,
         min_length=min_length,
         max_length=max_length,
-        category=category
+        category=category,
     )
-    
+
     return {
         "info": {
             "type": "group",
@@ -106,7 +106,7 @@ async def actor_with_most_films(
         },
         "data": {
             "cols": [["actor_name", "Actor Name"], ["films", "Number of Films"]],
-            "rows": [[row.get("actor_name"), row.get("films")] for row in rows]
+            "rows": [[row.get("actor_name"), row.get("films")] for row in rows],
         },
     }
 
@@ -143,7 +143,7 @@ async def monthly_rental_revenue(
         end_date=end_date,
         store=store,
     )
-    
+
     return {
         "type": "Series",
         "chartType": "bar",
@@ -158,8 +158,15 @@ async def monthly_rental_revenue(
             "keyName": "category_name",
             "valName": "total_revenue",
         },
-        "cols": [["p_date", "Month"], ["category_name", "Category"], ["total_revenue", "Revenue ($)"]],
-        "rows": [[row.get("p_date"), row.get("category_name"), row.get("total_revenue")] for row in rows],
+        "cols": [
+            ["p_date", "Month"],
+            ["category_name", "Category"],
+            ["total_revenue", "Revenue ($)"],
+        ],
+        "rows": [
+            [row.get("p_date"), row.get("category_name"), row.get("total_revenue")]
+            for row in rows
+        ],
         "onClick": [],
     }
 
@@ -199,7 +206,7 @@ async def film_category_distribution(
         min_rental_rate=min_rental_rate,
         max_rental_rate=max_rental_rate,
     )
-    
+
     return {
         "info": {
             "type": "group",
@@ -212,7 +219,7 @@ async def film_category_distribution(
         },
         "data": {
             "cols": [["category_name", "Category"], ["film_count", "Number of Films"]],
-            "rows": [[row.get("category_name"), row.get("film_count")] for row in rows]
+            "rows": [[row.get("category_name"), row.get("film_count")] for row in rows],
         },
     }
 
@@ -249,9 +256,12 @@ async def revenue_by_country(
         end_date=end_date,
         store=store,
     )
-    
-    areas = [{"name": row.get("country_name"), "value": row.get("total_revenue")} for row in rows]
-    
+
+    areas = [
+        {"name": row.get("country_name"), "value": row.get("total_revenue")}
+        for row in rows
+    ]
+
     return {
         "type": "AreaMap",
         "mapId": "world",
@@ -296,7 +306,7 @@ async def daily_rental_trends_by_category(
         store=store,
         category=category,
     )
-    
+
     return {
         "type": "Series",
         "chartType": "line",
@@ -311,8 +321,15 @@ async def daily_rental_trends_by_category(
             "keyName": "category_name",
             "valName": "rental_count",
         },
-        "cols": [["rental_date", "Date"], ["category_name", "Category"], ["rental_count", "Rentals"]],
-        "rows": [[row.get("rental_date"), row.get("category_name"), row.get("rental_count")] for row in rows],
+        "cols": [
+            ["rental_date", "Date"],
+            ["category_name", "Category"],
+            ["rental_count", "Rentals"],
+        ],
+        "rows": [
+            [row.get("rental_date"), row.get("category_name"), row.get("rental_count")]
+            for row in rows
+        ],
         "onClick": [],
     }
 
@@ -358,7 +375,7 @@ async def top_customers_by_rentals(
         max_length=max_length,
         active_only=active_only,
     )
-    
+
     return {
         "info": {
             "type": "group",
@@ -370,8 +387,13 @@ async def top_customers_by_rentals(
             "onClick": [],
         },
         "data": {
-            "cols": [["customer_name", "Customer Name"], ["rental_count", "Number of Rentals"]],
-            "rows": [[row.get("customer_name"), row.get("rental_count")] for row in rows]
+            "cols": [
+                ["customer_name", "Customer Name"],
+                ["rental_count", "Number of Rentals"],
+            ],
+            "rows": [
+                [row.get("customer_name"), row.get("rental_count")] for row in rows
+            ],
         },
     }
 
@@ -405,7 +427,7 @@ async def film_length_distribution_by_category(
         start_year=start_year,
         end_year=end_year,
     )
-    
+
     return {
         "info": {
             "type": "group",
@@ -417,7 +439,13 @@ async def film_length_distribution_by_category(
             "onClick": [],
         },
         "data": {
-            "cols": [["category_name", "Category"], ["avg_length_minutes", "Average Length (minutes)"]],
-            "rows": [[row.get("category_name"), row.get("avg_length_minutes")] for row in rows]
+            "cols": [
+                ["category_name", "Category"],
+                ["avg_length_minutes", "Average Length (minutes)"],
+            ],
+            "rows": [
+                [row.get("category_name"), row.get("avg_length_minutes")]
+                for row in rows
+            ],
         },
     }
