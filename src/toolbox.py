@@ -57,9 +57,12 @@ class YesNo(Enum):
         "Top actors by film count",
         "Which actors appeared in most movies",
     ],
-    args={"start_year": "from year", "end_year": "to year",
-          "min_length": "min film length",
-          "max_length": "max film length"}
+    args={
+        "start_year": "from year",
+        "end_year": "to year",
+        "min_length": "min film length",
+        "max_length": "max film length",
+    },
 )
 async def actor_with_most_films(
     state: State,
@@ -114,7 +117,7 @@ async def actor_with_most_films(
         "Rental revenue by month",
         "Monthly rental income analysis",
     ],
-    args={"start_date": "from", "end_date": "to"}
+    args={"start_date": "from", "end_date": "to"},
 )
 async def monthly_rental_revenue(
     state: State,
@@ -159,8 +162,7 @@ async def monthly_rental_revenue(
             ["total_revenue", "Revenue ($)"],
         ],
         "rows": [
-            [row.get("p_date"), row.get("category_name"),
-             row.get("total_revenue")]
+            [row.get("p_date"), row.get("category_name"), row.get("total_revenue")]
             for row in rows
         ],
     }
@@ -174,10 +176,12 @@ async def monthly_rental_revenue(
         "Category distribution",
         "Films by genre",
     ],
-    args={"start_year": "from year",
-          "end_year": "to year",
-          "min_rental_rate": "min rental rate",
-          "max_rental_rate": "max rental rate"}
+    args={
+        "start_year": "from year",
+        "end_year": "to year",
+        "min_rental_rate": "min rental rate",
+        "max_rental_rate": "max rental rate",
+    },
 )
 async def film_category_distribution(
     state: State,
@@ -229,7 +233,7 @@ async def film_category_distribution(
         "Country revenue analysis",
         "Geographic revenue distribution",
     ],
-    args={"start_date": "from", "end_date": "to"}
+    args={"start_date": "from", "end_date": "to"},
 )
 async def revenue_by_country(
     state: State,
@@ -274,7 +278,7 @@ async def revenue_by_country(
         "Rental patterns by category",
         "Daily category performance",
     ],
-    args={"start_date": "from", "end_date": "to"}
+    args={"start_date": "from", "end_date": "to"},
 )
 async def daily_rental_trends_by_category(
     state: State,
@@ -322,8 +326,7 @@ async def daily_rental_trends_by_category(
             ["rental_count", "Rentals"],
         ],
         "rows": [
-            [row.get("rental_date"), row.get(
-                "category_name"), row.get("rental_count")]
+            [row.get("rental_date"), row.get("category_name"), row.get("rental_count")]
             for row in rows
         ],
     }
@@ -337,8 +340,13 @@ async def daily_rental_trends_by_category(
         "Best customers by rental count",
         "Customer rental analysis",
     ],
-    args={"start_date": "from", "end_date": "to",
-          "min_length": "min film length", "max_length": "max film length", "active_only": "only active"}
+    args={
+        "start_date": "from",
+        "end_date": "to",
+        "min_length": "min film length",
+        "max_length": "max film length",
+        "active_only": "only active",
+    },
 )
 async def top_customers_by_rentals(
     state: State,
@@ -401,7 +409,7 @@ async def top_customers_by_rentals(
         "Average movie duration by genre",
         "Category length analysis",
     ],
-    args={"start_year": "from year", "end_year": "to year"}
+    args={"start_year": "from year", "end_year": "to year"},
 )
 async def film_length_distribution_by_category(
     state: State,
