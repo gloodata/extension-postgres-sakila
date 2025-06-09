@@ -1,7 +1,8 @@
 import logging
-import asyncpg
-import aiosql
 import os
+
+import aiosql
+import asyncpg
 
 logger = logging.getLogger("db")
 
