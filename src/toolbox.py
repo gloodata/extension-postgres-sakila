@@ -336,7 +336,7 @@ async def daily_rental_trends_by_category(
         "Customer rental analysis",
     ],
     args={"start_date": "from", "end_date": "to",
-          "min_length": "min film length", "max_length": "max film length"}
+          "min_length": "min film length", "max_length": "max film length", "active_only": "only active"}
 )
 async def top_customers_by_rentals(
     state: State,
